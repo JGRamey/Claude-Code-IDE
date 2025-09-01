@@ -1,0 +1,1 @@
+// StatusIndicator component

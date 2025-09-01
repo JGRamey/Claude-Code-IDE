@@ -1,0 +1,1 @@
+// TerminalOutput component

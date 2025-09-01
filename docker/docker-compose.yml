@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  claude-code-ide:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "3000:3000"    # React app
+      - "3001:3001"    # Claude Code WebSocket
+      - "5173:5173"    # Vite dev server
+      - "8080:8080"    # Preview server
+    volumes:
+      - ../src:/app/src:delegated
+      - ../public:/app/public:delegated
+      - ../package.json:/app/package.json:ro
+      - ../tsconfig.json:/app/tsconfig.json:ro
+      - ../tailwind.config.js:/app/tailwind.config.js:ro
+      - ../vite.config.ts:/app/vite.config.ts:ro
+      - /app/node_modules  # Anonymous volume for node_modules
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker socket for container management
+    environment:
+      - NODE_ENV=development
+      - VITE_CLAUDE_CODE_WS_URL=ws://localhost:3001
+      - VITE_PREVIEW_URL=http://localhost:8080
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    command: >
+      sh -c "
+        npm install &&
+        claude-code init --workspace=/app &&
+        concurrently
+          \"npm run dev\"
+          \"claude-code dev --watch --docker --port=3001\"
+          \"http-server public -p 8080 -c-1\"
+      "
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - claude-network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - claude-network
+
+  # PostgreSQL for project metadata and chat history
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=claude_code_ide
+      - POSTGRES_USER=claude
+      - POSTGRES_PASSWORD=secure_password_123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - claude-network
+
+  # File watcher service for real-time updates
+  file-watcher:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile.watcher
+    volumes:
+      - ../src:/watch/src:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - WATCH_PATH=/watch/src
+      - WEBSOCKET_URL=ws://claude-code-ide:3001
+    depends_on:
+      - claude-code-ide
+    networks:
+      - claude-network
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  node_modules:
+    driver: local
+
+networks:
+  claude-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
