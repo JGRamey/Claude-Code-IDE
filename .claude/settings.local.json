@@ -76,7 +76,11 @@
       "Bash(start \"\" \"C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE\\example_preview\\portfolio.html\")",
       "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)",
       "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)",
-      "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)"
+      "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)",
+      "Bash(rg:*)",
+      "Bash(jq:*)",
+      "Bash(/dev/null)",
+      "Bash(claude mcp:*)"
     ],
     "deny": []
   },
