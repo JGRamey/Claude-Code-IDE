@@ -72,7 +72,11 @@
       "Bash(npx tsx:*)",
       "Bash(node:*)",
       "Bash(timeout 10s npm run dev)",
-      "Bash(npm run test:db:*)"
+      "Bash(npm run test:db:*)",
+      "Bash(start \"\" \"C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE\\example_preview\\portfolio.html\")",
+      "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)",
+      "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)",
+      "Read(C:\\Users\\zochr\\Desktop\\GitHub\\Claude-Code-IDE/**)"
     ],
     "deny": []
   },
