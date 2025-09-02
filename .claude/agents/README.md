@@ -1,172 +1,369 @@
-# 🤖 Claude Code Agents
+# 🤖 Claude Code IDE Agent System
 
-## 📋 Purpose & Overview
+## 📋 Overview
 
-This document serves as the comprehensive guide for:
-- **Agentic Workflow**: Understanding agent interactions and processes
-- **Agent Functions**: Individual agent capabilities and use cases  
-- **Workflow Optimization**: Improvements to agent coordination
-- **Agent Development**: New agent creation and enhancement strategies
-- **Performance Tuning**: Agent optimization recommendations
-- **Troubleshooting**: Updates, fixes, and maintenance guidance
+This directory contains the specialized AI agents that power the Claude Code IDE. Each agent is designed with specific expertise and responsibilities, working together to create a seamless development experience.
 
----
+## 🎯 Agent Architecture
 
-## 🧠 Strategic Agent Analysis - Opus Insights:
-
-
-### 📊 Project Context Overview
-
-Based on the chat logs and project knowledge, I can see:
-
-- The project is at 99.3% completion (Week 11 of 12)
-- It's a hybrid Neo4j/Qdrant knowledge graph system with 25+ AI agents
-- Seven Claude Code agents were recently created for development workflow
-- Recent sessions focused on refactoring large files (TOP 12 largest files milestone achieved)
-- Phase 6 Advanced Features is 70% complete
-- The project has excellent performance metrics and modular architecture
-
-Let me provide a comprehensive analysis and recommendations.
-
----
-
-## 🎯 MCP Yggdrasil Project Analysis & Agent Recommendations
-
-### Executive Summary
-
-The MCP Yggdrasil project is a sophisticated Advanced Knowledge Graph System combining Neo4j graph database with Qdrant vector search, featuring 25+ AI agents for knowledge extraction, validation, and analysis. At 99.3% completion (Week 11 of 12), the project demonstrates exceptional architecture and engineering quality.
-
-
-## 🔍 Claude Code Agents Analysis
-
-### Current Agent Ecosystem (7 Agents)
-
-#### ✅ Code-Quality-Guardian
-- Well-designed for linting and formatting
-- Should be enhanced with auto-fix capabilities
-
-#### ✅ Test-Coverage-Architect
-- Critical given the 5% coverage issue
-- Needs immediate deployment
-
-#### ✅ Feature-Completion-Specialist
-- Perfect for missing extractors
-- Clear specifications provided
-
-#### ✅ Performance-Optimizer
-- Less critical given excellent metrics
-- Useful for final optimizations
-
-#### ✅ Documentation-Curator
-- Essential for documentation debt
-- Good trigger conditions
-
-#### ✅ Dependency-Auditor
-- Important for security
-- Weekly schedule appropriate
-
-#### ✅ Repo-Structure-Updater
-- Useful for maintaining organization
-- Good integration with structure file
-
----
-
-## 🚀 Recommended New Agents for Production Success
-
-### 1. Integration-Test-Builder 🆕 (CRITICAL)
-```yaml
-name: Integration-Test-Builder
-color: orange
-description: Creates comprehensive integration tests for API endpoints and agent interactions
-responsibilities:
-  - Generate FastAPI test client tests
-  - Create Neo4j/Qdrant integration tests
-  - Mock external services properly
-  - Achieve 80% coverage on critical paths
-  - Test event-driven workflows
+```mermaid
+graph TB
+    subgraph "Command Layer"
+        U[User Input]
+    end
+    
+    subgraph "Orchestration Layer"
+        O[Orchestrator Agent]
+    end
+    
+    subgraph "Specialist Layer"
+        F[Frontend Architect]
+        B[Backend Architect]
+        C[CLI Integration]
+        T[Testing Specialist]
+        P[Performance Monitor]
+    end
+    
+    subgraph "Support Layer"
+        D[Documentor]
+        E[Evaluator]
+    end
+    
+    U --> O
+    O --> F
+    O --> B
+    O --> C
+    O --> T
+    O --> P
+    F --> D
+    B --> D
+    C --> D
+    T --> E
+    P --> E
 ```
 
-### 2. Security-Audit-Specialist 🆕 (HIGH PRIORITY)
-```yaml
-name: Security-Audit-Specialist
-color: red
-description: Performs security audits and fixes vulnerabilities
-responsibilities:
-  - Run SAST/DAST scans
-  - Check for SQL/NoSQL injection vulnerabilities
-  - Audit authentication/authorization flows
-  - Verify encryption implementation
-  - Check for exposed secrets/keys
+## 📊 Agent Capabilities Matrix
+
+| Agent | Model | Priority | Primary Focus | Key Technologies |
+|-------|-------|----------|---------------|-----------------|
+| **orchestrator** | opus | 10 | Task coordination & workflow | Project management, Quality gates |
+| **frontend-architect** | opus | 9 | UI/UX development | React, TypeScript, Monaco Editor |
+| **backend-architect** | opus | 9 | Server & API development | Node.js, WebSocket, Express |
+| **cli-integration** | opus | 9 | Claude Code CLI interface | Process management, IPC |
+| **testing-specialist** | sonnet | 8 | Test coverage & quality | Jest, Playwright, RTL |
+| **performance-monitor** | sonnet | 7 | Optimization & monitoring | Profiling, Metrics, Analytics |
+| **documentor** | sonnet | 8 | Documentation & knowledge | Markdown, TypeDoc, ADRs |
+| **evaluator** | sonnet | 7 | Quality & performance analysis | Metrics, Code review, Auditing |
+
+## 🚀 Quick Start
+
+### Basic Usage
+
+```bash
+# Initialize an agent for a specific task
+claude-code --agent orchestrator --task "Set up new React component"
+
+# Direct agent invocation
+claude-code --agent frontend-architect --instruction "Create FileExplorer component with virtual scrolling"
+
+# Multi-agent workflow
+claude-code --workflow "full-stack-feature" --agents "orchestrator,frontend-architect,backend-architect"
 ```
 
-### 3. CI-CD-Pipeline-Architect 🆕 (PRODUCTION CRITICAL)
-```yaml
-name: CI-CD-Pipeline-Architect
-color: purple
-description: Sets up and maintains CI/CD pipelines
-responsibilities:
-  - Create GitHub Actions workflows
-  - Set up automated testing on PR
-  - Configure deployment pipelines
-  - Implement rollback strategies
-  - Set up environment configurations
+### In-IDE Usage
+
+When working in the Claude Code IDE, agents are automatically invoked based on context:
+
+1. **File Creation**: Appropriate architect agent based on file type
+2. **Testing**: Testing specialist for test file generation
+3. **Documentation**: Documentor for README and docs
+4. **Performance Issues**: Performance monitor for optimization
+5. **Code Review**: Evaluator for quality analysis
+
+## 🎭 Agent Personalities & Expertise
+
+### 🎼 Orchestrator
+- **Personality**: Strategic, organized, deadline-focused
+- **Expertise**: Project management, task decomposition, agent coordination
+- **Key Patterns**: Quality gates, dependency management, parallel execution
+- **Communication**: Status broadcasts every 15 minutes
+
+### 🎨 Frontend Architect
+- **Personality**: Creative, detail-oriented, user-focused
+- **Expertise**: React patterns, TypeScript, performance optimization
+- **Key Patterns**: Compound components, custom hooks, virtual scrolling
+- **Specialties**: Monaco Editor, state management, accessibility
+
+### ⚙️ Backend Architect
+- **Personality**: Systematic, security-conscious, scalable-thinking
+- **Expertise**: API design, database optimization, microservices
+- **Key Patterns**: Repository pattern, dependency injection, middleware
+- **Specialties**: WebSocket, authentication, caching strategies
+
+### 🔧 CLI Integration
+- **Personality**: Precise, reliable, process-oriented
+- **Expertise**: Process management, IPC, command parsing
+- **Key Patterns**: Command queue, response streaming, error recovery
+- **Specialties**: Claude Code CLI, file system operations, WebSocket bridge
+
+### 🧪 Testing Specialist
+- **Personality**: Thorough, skeptical, quality-obsessed
+- **Expertise**: Test strategies, coverage optimization, E2E testing
+- **Key Patterns**: Page objects, test fixtures, mocking strategies
+- **Specialties**: Jest, Playwright, React Testing Library
+
+### 📈 Performance Monitor
+- **Personality**: Analytical, proactive, optimization-focused
+- **Expertise**: Profiling, metrics collection, bottleneck identification
+- **Key Patterns**: Lazy loading, memoization, bundle optimization
+- **Specialties**: React DevTools, Lighthouse, bundle analysis
+
+### 📚 Documentor
+- **Personality**: Clear, comprehensive, organized
+- **Expertise**: Technical writing, API documentation, knowledge management
+- **Key Patterns**: Session continuity, ADRs, visual documentation
+- **Specialties**: Markdown, TypeDoc, Mermaid diagrams
+
+### 📊 Evaluator
+- **Personality**: Critical, data-driven, improvement-focused
+- **Expertise**: Code quality, performance analysis, metrics tracking
+- **Key Patterns**: Quality gates, trend analysis, recommendation engine
+- **Specialties**: SonarQube, ESLint, performance profiling
+
+## 💬 Inter-Agent Communication Protocol
+
+### Message Format
+```typescript
+interface AgentMessage {
+  from: string;         // Sending agent
+  to: string;          // Receiving agent
+  type: 'request' | 'response' | 'broadcast';
+  priority: 'low' | 'normal' | 'high' | 'critical';
+  payload: {
+    task?: Task;
+    result?: Result;
+    metrics?: Metrics;
+    error?: Error;
+  };
+  timestamp: Date;
+  correlationId: string;
+}
 ```
 
-### 4. Performance-Monitor 🆕 (POST-DEPLOYMENT)
-```yaml
-name: Performance-Monitor
-color: teal
-description: Monitors production performance and creates alerts
-responsibilities:
-  - Set up Prometheus alerts
-  - Create Grafana dashboards
-  - Monitor API response times
-  - Track database query performance
-  - Alert on anomalies
+### Communication Rules
+1. **All requests go through Orchestrator** (except emergency escalations)
+2. **Status updates every 15 minutes** or on major milestones
+3. **Blocking issues escalated immediately** with priority: 'critical'
+4. **Results documented by Documentor** before task closure
+5. **Performance metrics sent to Evaluator** after each task
+
+## 📏 Quality Standards
+
+### Code Quality Requirements
+- **Test Coverage**: Minimum 80% (100% for critical paths)
+- **TypeScript**: Strict mode, no `any` types
+- **Performance**: Response time < 100ms, memory < 500MB
+- **Documentation**: All public APIs documented with examples
+- **Accessibility**: WCAG 2.1 AA compliance
+
+### Review Process
+```mermaid
+graph LR
+    A[Code Written] --> B[Self Review]
+    B --> C[Peer Agent Review]
+    C --> D[Evaluator Analysis]
+    D --> E{Pass?}
+    E -->|Yes| F[Documentor Records]
+    E -->|No| G[Return to Author]
+    G --> A
+    F --> H[Deploy]
 ```
 
-### 5. Database-Migration-Manager 🆕 (MAINTENANCE)
+## 🔄 Workflow Patterns
+
+### Pattern 1: Full Stack Feature
 ```yaml
-name: Database-Migration-Manager
-color: brown
-description: Manages database schema migrations and updates
-responsibilities:
-  - Create Alembic migrations
-  - Handle Neo4j schema evolution
-  - Manage Qdrant collection updates
-  - Ensure zero-downtime migrations
-  - Create rollback procedures
+workflow: full-stack-feature
+agents:
+  - orchestrator: decompose requirements
+  - backend-architect: design API
+  - frontend-architect: design UI
+  - parallel:
+    - backend-architect: implement API
+    - frontend-architect: implement UI
+  - cli-integration: connect systems
+  - testing-specialist: write tests
+  - performance-monitor: optimize
+  - documentor: document feature
+  - evaluator: final review
 ```
 
----
-
-## 📋 Recommended Workflow Improvements
-
-### 1. Enhanced Agent Workflow
+### Pattern 2: Performance Optimization
 ```yaml
-Development Flow:
-  1. Feature-Completion-Specialist → Implement missing functionality
-  2. Code-Quality-Guardian → Fix formatting and linting
-  3. Integration-Test-Builder → Create comprehensive tests
-  4. Security-Audit-Specialist → Verify security
-  5. Documentation-Curator → Update all docs
-  6. CI-CD-Pipeline-Architect → Prepare deployment
-  7. Performance-Monitor → Post-deployment monitoring
+workflow: performance-optimization
+agents:
+  - performance-monitor: profile application
+  - evaluator: identify bottlenecks
+  - parallel:
+    - frontend-architect: optimize client
+    - backend-architect: optimize server
+  - testing-specialist: performance tests
+  - documentor: document improvements
 ```
 
-### 2. Pre-Commit Automation
-- Activate existing .pre-commit-config.yaml
-- Run Code-Quality-Guardian automatically
-- Block commits with test coverage <50%
-
-### 3. Sprint Completion Protocol
+### Pattern 3: Bug Fix
 ```yaml
-Before marking any task complete:
-  - Run full test suite
-  - Verify all imports work
-  - Check file sizes (<500 lines)
-  - Update documentation
-  - Archive old files properly
+workflow: bug-fix
+agents:
+  - evaluator: analyze bug report
+  - orchestrator: assign to specialist
+  - [specialist]: implement fix
+  - testing-specialist: write regression test
+  - documentor: update changelog
 ```
 
----
+## 🚨 Error Handling
+
+### Agent Failure Protocol
+1. **Retry with same agent** (max 3 attempts)
+2. **Escalate to Orchestrator** for reassignment
+3. **Fallback to alternative agent** if available
+4. **Human intervention** if all agents fail
+
+### Recovery Strategies
+```typescript
+const recoveryStrategies = {
+  'frontend-architect': ['ui-ux-designer', 'full-stack-developer'],
+  'backend-architect': ['full-stack-developer', 'api-specialist'],
+  'cli-integration': ['devops-specialist', 'backend-architect'],
+  'testing-specialist': ['qa-engineer', 'frontend-architect'],
+  'performance-monitor': ['evaluator', 'devops-specialist'],
+  'documentor': ['technical-writer', 'frontend-architect'],
+  'evaluator': ['performance-monitor', 'testing-specialist']
+};
+```
+
+## 📈 Performance Targets
+
+| Metric | Target | Critical Threshold |
+|--------|--------|-------------------|
+| Task Completion Rate | > 95% | < 80% |
+| Average Response Time | < 30s | > 60s |
+| Error Rate | < 2% | > 5% |
+| Documentation Coverage | 100% | < 80% |
+| Test Coverage | > 80% | < 60% |
+| Code Quality Score | > 90% | < 70% |
+
+## 🔧 Configuration
+
+### Agent Configuration File
+```yaml
+# .claude/agents/config.yml
+agents:
+  orchestrator:
+    enabled: true
+    model: opus
+    maxConcurrentTasks: 10
+    timeout: 600000
+    retryAttempts: 2
+    
+  frontend-architect:
+    enabled: true
+    model: opus
+    maxConcurrentTasks: 5
+    timeout: 300000
+    tools:
+      - react-devtools
+      - monaco-editor
+      - webpack-analyzer
+    
+  performance-monitor:
+    enabled: true
+    model: sonnet
+    scanInterval: 300000  # 5 minutes
+    metrics:
+      - memory
+      - cpu
+      - fps
+      - bundle-size
+```
+
+### Environment Variables
+```bash
+# .env
+CLAUDE_CODE_AGENTS_ENABLED=true
+CLAUDE_CODE_ORCHESTRATOR_MODEL=opus
+CLAUDE_CODE_MAX_PARALLEL_AGENTS=3
+CLAUDE_CODE_AGENT_TIMEOUT=300000
+CLAUDE_CODE_AGENT_LOG_LEVEL=info
+```
+
+## 🎓 Best Practices
+
+### 1. Task Decomposition
+- Break large tasks into < 2-hour chunks
+- Define clear acceptance criteria
+- Specify dependencies explicitly
+
+### 2. Context Sharing
+- Always include relevant file paths
+- Provide recent change history
+- Share error messages completely
+
+### 3. Performance
+- Cache frequently accessed data
+- Use streaming for large responses
+- Implement progressive enhancement
+
+### 4. Documentation
+- Document decisions as they're made
+- Include examples in all APIs
+- Update docs before closing tasks
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| Agent timeout | Task too complex | Break into smaller tasks |
+| High error rate | Missing context | Provide more specific instructions |
+| Slow responses | Resource constraints | Increase timeout or optimize query |
+| Documentation gaps | Async updates | Enable sync documentation mode |
+
+### Debug Commands
+```bash
+# Check agent status
+claude-code --agent [name] --status
+
+# View agent logs
+claude-code --agent [name] --logs --tail 100
+
+# Test agent connectivity
+claude-code --agent [name] --health-check
+
+# Reset agent state
+claude-code --agent [name] --reset
+```
+
+## 📚 Learning Resources
+
+- [Agent Development Guide](./docs/development.md)
+- [Custom Agent Creation](./docs/custom-agents.md)
+- [Performance Tuning](./docs/performance.md)
+- [Integration Patterns](./docs/integration.md)
+
+## 🤝 Contributing
+
+To add or modify agents:
+
+1. Create agent file: `.claude/agents/[agent-name].md`
+2. Define capabilities in `src/types/agents.ts`
+3. Implement handler in `src/services/agentService.ts`
+4. Add tests in `src/__tests__/agents/`
+5. Update this README
+6. Submit PR with documentation
+
+## 📄 License
+
+Copyright (c) 2024 Claude Code IDE Team. All rights reserved.

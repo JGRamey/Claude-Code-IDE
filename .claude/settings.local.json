@@ -80,7 +80,9 @@
       "Bash(rg:*)",
       "Bash(jq:*)",
       "Bash(/dev/null)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(touch:*)",
+      "WebFetch(domain:docs.anthropic.com)"
     ],
     "deny": []
   },
