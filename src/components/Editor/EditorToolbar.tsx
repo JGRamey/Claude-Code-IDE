@@ -1,1 +1,0 @@
-// EditorToolbar component
