@@ -4,7 +4,7 @@
 - **Agent**: [AGENT_NAME]
 - **Session ID**: [SESSION_ID]
 - **Evaluation Date**: [TIMESTAMP]
-- **Evaluator**: [EVALUATOR_AGENT]
+- **Evaluator**: Main Claude Code Session
 - **Evaluation Type**: [PERFORMANCE/QUALITY/FINAL]
 
 ## Performance Metrics
@@ -51,8 +51,9 @@
 - **Error Recovery Rate**: [PERCENTAGE]% (Target: >95%)
 - **WebSocket Connection Stability**: [PERCENTAGE]%
 
-### Orchestrator Specific
-- **Task Distribution Efficiency**: [SCORE]/100
+### Main Claude Session (Orchestrator) Specific
+- **Task Analysis Quality**: [SCORE]/100
+- **Agent Delegation Efficiency**: [SCORE]/100
 - **Agent Utilization**: [PERCENTAGE]%
 - **Conflict Resolution Time**: [TIME]ms
 - **Quality Gate Pass Rate**: [PERCENTAGE]%
@@ -167,7 +168,7 @@
 - [ ] [Action item 2]
 - [ ] [Action item 3]
 
-### For Orchestrator
+### For Main Claude Session (Orchestrator)
 - [ ] [Coordination action 1]
 - [ ] [Resource allocation action]
 - [ ] [Process improvement]
@@ -187,5 +188,5 @@
 ---
 
 **Evaluation Completed**: [TIMESTAMP]  
-**Evaluator Signature**: [EVALUATOR_AGENT]  
+**Evaluator Signature**: Main Claude Code Session  
 **Next Evaluation Due**: [NEXT_EVAL_DATE]

@@ -12,81 +12,84 @@ graph TB
         U[User Input]
     end
     
-    subgraph "Orchestration Layer"
-        O[Orchestrator Agent]
+    subgraph "Main Orchestration"
+        M[Main Claude Code Session]
     end
     
     subgraph "Specialist Layer"
         F[Frontend Architect]
         B[Backend Architect]
         C[CLI Integration]
-        T[Testing Specialist]
-        P[Performance Monitor]
+        T[Test Architect]
+        UI[UI/UX Designer]
+        DB[Database Specialist]
+        DO[DevOps Specialist]
     end
     
     subgraph "Support Layer"
         D[Documentor]
-        E[Evaluator]
     end
     
-    U --> O
-    O --> F
-    O --> B
-    O --> C
-    O --> T
-    O --> P
+    U --> M
+    M --> F
+    M --> B
+    M --> C
+    M --> T
+    M --> UI
+    M --> DB
+    M --> DO
     F --> D
     B --> D
     C --> D
-    T --> E
-    P --> E
+    T --> D
+    UI --> D
 ```
 
 ## 📊 Agent Capabilities Matrix
 
 | Agent | Model | Priority | Primary Focus | Key Technologies |
 |-------|-------|----------|---------------|-----------------|
-| **orchestrator** | opus | 10 | Task coordination & workflow | Project management, Quality gates |
-| **frontend-architect** | opus | 9 | UI/UX development | React, TypeScript, Monaco Editor |
+| **frontend-architect** | opus | 9 | UI/UX development | React, TypeScript, Monaco Editor, Playwright |
 | **backend-architect** | opus | 9 | Server & API development | Node.js, WebSocket, Express |
 | **cli-integration** | opus | 9 | Claude Code CLI interface | Process management, IPC |
-| **testing-specialist** | sonnet | 8 | Test coverage & quality | Jest, Playwright, RTL |
-| **performance-monitor** | sonnet | 7 | Optimization & monitoring | Profiling, Metrics, Analytics |
-| **documentor** | sonnet | 8 | Documentation & knowledge | Markdown, TypeDoc, ADRs |
-| **evaluator** | sonnet | 7 | Quality & performance analysis | Metrics, Code review, Auditing |
+| **ui-ux** | opus | 9 | Design & User Experience | Figma, Design Systems, Playwright |
+| **test-architect** | sonnet | 8 | Test coverage & quality | Jest, Playwright, RTL |
+| **database-specialist** | sonnet | 8 | Database design & optimization | PostgreSQL, Redis, Drizzle ORM |
+| **devops-specialist** | sonnet | 8 | Infrastructure & deployment | Docker, CI/CD, Performance |
+| **documentor** | sonnet | 7 | Documentation & knowledge | Markdown, TypeDoc, ADRs |
 
 ## 🚀 Quick Start
 
 ### Basic Usage
 
 ```bash
-# Initialize an agent for a specific task
-claude-code --agent orchestrator --task "Set up new React component"
-
-# Direct agent invocation
+# Direct agent invocation from main Claude session
 claude-code --agent frontend-architect --instruction "Create FileExplorer component with virtual scrolling"
 
-# Multi-agent workflow
-claude-code --workflow "full-stack-feature" --agents "orchestrator,frontend-architect,backend-architect"
+# Multi-agent workflow coordinated by main session
+claude-code --workflow "full-stack-feature" --agents "frontend-architect,backend-architect"
+
+# Natural language coordination
+"I need to implement a new React component. Please delegate to the frontend-architect."
 ```
 
 ### In-IDE Usage
 
-When working in the Claude Code IDE, agents are automatically invoked based on context:
+When working in the Claude Code IDE, the main Claude session coordinates agent invocation based on context:
 
 1. **File Creation**: Appropriate architect agent based on file type
-2. **Testing**: Testing specialist for test file generation
+2. **Testing**: Test-architect for test file generation
 3. **Documentation**: Documentor for README and docs
-4. **Performance Issues**: Performance monitor for optimization
-5. **Code Review**: Evaluator for quality analysis
+4. **Design Review**: UI/UX agent with Playwright for visual analysis
+5. **Code Quality**: Main session performs evaluator duties with agent assistance
 
 ## 🎭 Agent Personalities & Expertise
 
-### 🎼 Orchestrator
-- **Personality**: Strategic, organized, deadline-focused
-- **Expertise**: Project management, task decomposition, agent coordination
-- **Key Patterns**: Quality gates, dependency management, parallel execution
-- **Communication**: Status broadcasts every 15 minutes
+### 🎯 Main Claude Code Session (Natural Orchestrator)
+- **Role**: Strategic coordinator, task decomposer, quality gate enforcer
+- **Capabilities**: Project management, agent delegation, evaluation duties
+- **Key Features**: Natural language coordination, Serena MCP integration, real-time quality assessment
+- **Communication**: Direct delegation to specialized agents based on context
 
 ### 🎨 Frontend Architect
 - **Personality**: Creative, detail-oriented, user-focused
@@ -112,11 +115,17 @@ When working in the Claude Code IDE, agents are automatically invoked based on c
 - **Key Patterns**: Page objects, test fixtures, mocking strategies
 - **Specialties**: Jest, Playwright, React Testing Library
 
-### 📈 Performance Monitor
-- **Personality**: Analytical, proactive, optimization-focused
-- **Expertise**: Profiling, metrics collection, bottleneck identification
-- **Key Patterns**: Lazy loading, memoization, bundle optimization
-- **Specialties**: React DevTools, Lighthouse, bundle analysis
+### 🗃️ Database Specialist
+- **Personality**: Systematic, performance-focused, data-integrity-conscious
+- **Expertise**: Database design, query optimization, migration management
+- **Key Patterns**: Repository pattern, connection pooling, schema versioning
+- **Specialties**: PostgreSQL, Redis, Drizzle ORM, performance tuning
+
+### ⚙️ DevOps Specialist
+- **Personality**: Infrastructure-focused, automation-driven, reliability-conscious
+- **Expertise**: Container orchestration, CI/CD pipelines, performance optimization
+- **Key Patterns**: Infrastructure as code, monitoring, deployment automation
+- **Specialties**: Docker, Kubernetes, performance monitoring, site reliability
 
 ### 📚 Documentor
 - **Personality**: Clear, comprehensive, organized
@@ -124,38 +133,38 @@ When working in the Claude Code IDE, agents are automatically invoked based on c
 - **Key Patterns**: Session continuity, ADRs, visual documentation
 - **Specialties**: Markdown, TypeDoc, Mermaid diagrams
 
-### 📊 Evaluator
-- **Personality**: Critical, data-driven, improvement-focused
-- **Expertise**: Code quality, performance analysis, metrics tracking
-- **Key Patterns**: Quality gates, trend analysis, recommendation engine
-- **Specialties**: SonarQube, ESLint, performance profiling
+### 🎨 UI/UX Designer
+- **Personality**: Creative, user-focused, accessibility-conscious
+- **Expertise**: Interface design, user experience optimization, visual testing
+- **Key Patterns**: Design systems, responsive layouts, interactive prototypes
+- **Specialties**: Playwright visual testing, design consistency, user journey optimization
 
 ## 💬 Inter-Agent Communication Protocol
 
 ### Message Format
 ```typescript
 interface AgentMessage {
-  from: string;         // Sending agent
-  to: string;          // Receiving agent
-  type: 'request' | 'response' | 'broadcast';
+  from: 'main-session' | string;  // Main session or agent name
+  to: string;                     // Receiving agent
+  type: 'delegation' | 'response' | 'status';
   priority: 'low' | 'normal' | 'high' | 'critical';
   payload: {
     task?: Task;
     result?: Result;
-    metrics?: Metrics;
-    error?: Error;
+    context?: ProjectContext;
+    requirements?: Requirements;
   };
   timestamp: Date;
-  correlationId: string;
+  sessionId: string;
 }
 ```
 
 ### Communication Rules
-1. **All requests go through Orchestrator** (except emergency escalations)
-2. **Status updates every 15 minutes** or on major milestones
-3. **Blocking issues escalated immediately** with priority: 'critical'
+1. **All requests coordinated by Main Claude Session** using natural language
+2. **Status updates on task completion** or when requesting assistance
+3. **Blocking issues escalated to main session** with context and proposed solutions
 4. **Results documented by Documentor** before task closure
-5. **Performance metrics sent to Evaluator** after each task
+5. **Quality assessment performed by main session** with agent input
 
 ## 📏 Quality Standards
 
@@ -184,42 +193,44 @@ graph LR
 ### Pattern 1: Full Stack Feature
 ```yaml
 workflow: full-stack-feature
-agents:
-  - orchestrator: decompose requirements
-  - backend-architect: design API
-  - frontend-architect: design UI
+coordinator: main-claude-session
+steps:
+  - main-session: analyze requirements and delegate
+  - backend-architect: design and implement API
+  - frontend-architect: design and implement UI  
+  - ui-ux: visual design and Playwright testing
   - parallel:
-    - backend-architect: implement API
-    - frontend-architect: implement UI
-  - cli-integration: connect systems
-  - testing-specialist: write tests
-  - performance-monitor: optimize
+    - test-architect: write comprehensive tests
+    - database-specialist: optimize data layer
   - documentor: document feature
-  - evaluator: final review
+  - main-session: final quality review and evaluation
 ```
 
 ### Pattern 2: Performance Optimization
 ```yaml
 workflow: performance-optimization
-agents:
-  - performance-monitor: profile application
-  - evaluator: identify bottlenecks
+coordinator: main-claude-session
+steps:
+  - main-session: analyze performance issues using Serena MCP
   - parallel:
-    - frontend-architect: optimize client
-    - backend-architect: optimize server
-  - testing-specialist: performance tests
-  - documentor: document improvements
+    - frontend-architect: optimize client performance
+    - backend-architect: optimize server performance
+    - database-specialist: optimize database queries
+  - test-architect: implement performance tests
+  - main-session: evaluate improvements and document results
 ```
 
 ### Pattern 3: Bug Fix
 ```yaml
 workflow: bug-fix
-agents:
-  - evaluator: analyze bug report
-  - orchestrator: assign to specialist
-  - [specialist]: implement fix
-  - testing-specialist: write regression test
+coordinator: main-claude-session
+steps:
+  - main-session: analyze bug report and identify root cause
+  - main-session: delegate to appropriate specialist
+  - [specialist]: implement fix with Context7 guidance
+  - test-architect: write regression test
   - documentor: update changelog
+  - main-session: verify fix quality and completeness
 ```
 
 ## 🚨 Error Handling

@@ -177,12 +177,14 @@ IDE <-> WebSocket <-> Claude Code CLI <-> Agents
 **Important**: We use Claude Code's existing agents, not custom IDE agents
 
 ```typescript
-// src/features/claudecode/AgentOrchestrator.ts
-class AgentOrchestrator {
-  // Read agent definitions from Claude Code
-  async loadAgents() {
-    const agents = await readFile('claude-code/agents.json');
-    return JSON.parse(agents);
+// Agent coordination is now handled by the main Claude Code session
+// No separate orchestrator class needed - native Claude coordination
+// src/features/claudecode/AgentIntegration.ts
+class AgentIntegration {
+  // Interface with Claude Code's native agent system
+  async delegateToAgent(agentName: string, task: AgentTask) {
+    // Delegate through main Claude session's natural orchestration
+    return await this.cliManager.delegateTask(agentName, task);
   }
   
   // Send commands to Claude Code CLI

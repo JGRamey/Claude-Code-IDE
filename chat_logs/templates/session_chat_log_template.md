@@ -103,7 +103,7 @@ All architect agents now properly understand:
 - Development rules are separate (in `.claude/agent_docs/rules/development_rules.md`)
 
 ### Agent Coordination
-- **Orchestrator Instructions**: [HOW_AGENTS_WERE_COORDINATED]
+- **Agent Coordination**: [HOW_AGENTS_WERE_COORDINATED_BY_MAIN_SESSION]
 - **Task Distribution**: [HOW_WORK_WAS_DIVIDED]
 - **Communication Pattern**: [MESSAGE_FLOW_BETWEEN_AGENTS]
 
