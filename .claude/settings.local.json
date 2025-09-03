@@ -82,7 +82,11 @@
       "Bash(/dev/null)",
       "Bash(claude mcp:*)",
       "Bash(touch:*)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(timeout:*)",
+      "Bash(true)"
     ],
     "deny": []
   },

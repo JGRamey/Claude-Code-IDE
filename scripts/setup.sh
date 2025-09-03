@@ -114,18 +114,8 @@ print_success "Claude Code workspace initialized"
 
 # Build Docker images
 print_status "Building Docker images..."
-docker-compose -f docker/docker-compose.dev.yml build
+docker-compose -f docker/docker-compose.yml build
 print_success "Docker images built"
-
-# Set up database
-print_status "Setting up database..."
-docker-compose -f docker/docker-compose.dev.yml up -d postgres redis
-sleep 5  # Wait for database to start
-
-# Run database migrations/setup
-print_status "Running database setup..."
-docker-compose -f docker/docker-compose.dev.yml exec -T postgres psql -U claude -d claude_code_ide -f /docker-entrypoint-initdb.d/init.sql
-print_success "Database setup complete"
 
 # Create necessary directories
 print_status "Creating project directories..."
@@ -208,41 +198,51 @@ print_success "Configuration files generated"
 print_status "Testing the setup..."
 
 # Start services in background for testing
-docker-compose -f docker/docker-compose.dev.yml up -d
+docker-compose -f docker/docker-compose.yml up -d
 
 # Wait for services to be ready
 print_status "Waiting for services to start..."
-sleep 15
+sleep 20
 
 # Check if services are running
-if curl -f http://localhost:3000 &> /dev/null; then
-    print_success "Web application is running on http://localhost:3000"
+if curl -f http://localhost:5173 &> /dev/null; then
+    print_success "Frontend is running on http://localhost:5173"
 else
-    print_warning "Web application not yet accessible (may take a few more moments)"
+    print_warning "Frontend not yet accessible (may take a few more moments)"
 fi
 
-if curl -f http://localhost:3001/health &> /dev/null; then
-    print_success "Claude Code WebSocket server is running"
+if curl -f http://localhost:3001/api/claude/health &> /dev/null; then
+    print_success "Backend API server is running"
 else
-    print_warning "Claude Code WebSocket server not yet accessible"
+    print_warning "Backend API server not yet accessible"
 fi
 
 # Stop test services
-docker-compose -f docker/docker-compose.dev.yml down
+docker-compose -f docker/docker-compose.yml down
 
 print_success "Setup complete!"
 echo ""
 echo "🎉 Claude Code IDE is now ready!"
 echo ""
 echo "To start the development environment:"
-echo "  npm run start:full"
+echo "  npm start                              # Start both frontend and backend"
+echo "  docker-compose up                      # Or use Docker (recommended)"
 echo ""
 echo "Or start individual services:"
-echo "  npm run docker:up     # Start Docker containers"
-echo "  npm run dev           # Start Vite dev server"
-echo "  npm run claude:dev    # Start Claude Code CLI"
+echo "  npm run dev:frontend                   # Frontend only (Vite dev server)"
+echo "  npm run dev:backend                    # Backend only (API server)"
+echo "  docker-compose up claude-code-frontend # Frontend container"
+echo "  docker-compose up claude-code-backend  # Backend container"
 echo ""
-echo "Access your IDE at: http://localhost:3000"
-echo "Claude Code WebSocket: ws://localhost:3001"
+echo "Access your IDE at:"
+echo "  Frontend: http://localhost:5173"
+echo "  Backend API: http://localhost:3001"
+echo "  Health Check: http://localhost:3001/api/claude/health"
 echo ""
-echo "Happy coding! 🚀"
+echo "🚀 Happy coding with Claude Code IDE!"
+echo ""
+print_status "Next steps:"
+echo "1. Set your Claude API key in environment variables"
+echo "2. Run 'npm start' or 'docker-compose up' to launch the IDE"
+echo "3. Open http://localhost:5173 in your browser"
+echo "4. Start coding and let Claude assist you!"

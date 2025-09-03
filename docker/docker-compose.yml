@@ -1,46 +1,36 @@
 version: '3.8'
 
 services:
-  claude-code-ide:
+  claude-code-frontend:
     build:
       context: ..
-      dockerfile: ./docker/Dockerfile
+      dockerfile: ./docker/Dockerfile.frontend
     ports:
-      - "3000:3000"    # React app
-      - "3001:3001"    # Claude Code WebSocket
       - "5173:5173"    # Vite dev server
-      - "8080:8080"    # Preview server
     volumes:
-      - ../src:/app/src:delegated
-      - ../public:/app/public:delegated
-      - ../package.json:/app/package.json:ro
-      - ../tsconfig.json:/app/tsconfig.json:ro
-      - ../tailwind.config.js:/app/tailwind.config.js:ro
-      - ../vite.config.ts:/app/vite.config.ts:ro
-      - /app/node_modules  # Anonymous volume for node_modules
-      - /var/run/docker.sock:/var/run/docker.sock  # Docker socket for container management
+      - ..:/app:delegated
+      - /app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_CLAUDE_CODE_WS_URL=ws://localhost:3001
-      - VITE_PREVIEW_URL=http://localhost:8080
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-    command: >
-      sh -c "
-        npm install &&
-        claude-code init --workspace=/app &&
-        concurrently
-          \"npm run dev\"
-          \"claude-code dev --watch --docker --port=3001\"
-          \"http-server public -p 8080 -c-1\"
-      "
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      - VITE_BACKEND_URL=http://localhost:3001
+    depends_on:
+      - claude-code-backend
+    networks:
+      - claude-network
+
+  claude-code-backend:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile.backend
+    ports:
+      - "3001:3001"    # Backend API and WebSocket
+    volumes:
+      - ..:/app:delegated
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    command: node server/index.js
     networks:
       - claude-network
 

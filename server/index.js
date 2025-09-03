@@ -1,15 +1,19 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const fs = require('fs').promises;
-const path = require('path');
-const { spawn } = require('child_process');
-const chokidar = require('chokidar');
+import express from 'express';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
+import cors from 'cors';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { spawn } from 'child_process';
+import chokidar from 'chokidar';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
+const server = createServer(app);
+const io = new SocketIOServer(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
@@ -207,6 +211,184 @@ app.post('/api/claude/debug', async (req, res) => {
   }
 });
 
+// Claude Code CLI Integration - Real Implementation
+const activeCLIProcesses = new Map();
+
+/**
+ * Execute Claude Code CLI command with proper process management
+ */
+app.post('/api/claude/execute', async (req, res) => {
+  try {
+    const { id, type, instruction, context, options } = req.body;
+    
+    if (!id || !instruction) {
+      return res.status(400).json({ error: 'Missing required fields: id, instruction' });
+    }
+
+    console.log(`[${new Date().toISOString()}] Executing Claude CLI command: ${id} (${type})`);
+    
+    // Prepare Claude Code CLI arguments
+    const args = [
+      '--workspace', context?.workspace || PROJECT_ROOT,
+      '--session-id', context?.sessionId || 'default',
+    ];
+
+    // Add instruction as argument or via stdin
+    const cliProcess = spawn('claude-code', [...args], {
+      cwd: context?.workspace || PROJECT_ROOT,
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        CLAUDE_CODE_MODE: 'api',
+        CLAUDE_CODE_LOG_LEVEL: 'info',
+      },
+      timeout: options?.timeout || 30000,
+    });
+
+    // Track the process
+    activeCLIProcesses.set(id, cliProcess);
+
+    let output = '';
+    let errorOutput = '';
+
+    // Handle CLI output
+    cliProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    cliProcess.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    // Send instruction to Claude Code CLI
+    cliProcess.stdin.write(instruction);
+    cliProcess.stdin.end();
+
+    // Handle process completion
+    cliProcess.on('close', (code) => {
+      activeCLIProcesses.delete(id);
+      
+      if (code === 0 && output.trim()) {
+        console.log(`[${new Date().toISOString()}] CLI command ${id} completed successfully`);
+        res.json({
+          id,
+          success: true,
+          output: output.trim(),
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        console.error(`[${new Date().toISOString()}] CLI command ${id} failed with code ${code}`);
+        console.error(`Error output: ${errorOutput}`);
+        
+        res.status(500).json({
+          id,
+          success: false,
+          error: errorOutput || `Process exited with code ${code}`,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    });
+
+    // Handle process errors
+    cliProcess.on('error', (error) => {
+      activeCLIProcesses.delete(id);
+      console.error(`[${new Date().toISOString()}] CLI process error for ${id}:`, error);
+      
+      // Check if this is a "claude-code command not found" error
+      if (error.code === 'ENOENT') {
+        res.status(503).json({
+          id,
+          success: false,
+          error: 'Claude Code CLI not found. Please ensure claude-code is installed and available in PATH.',
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.status(500).json({
+          id,
+          success: false,
+          error: error.message,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    });
+
+    // Set timeout for the request
+    const timeoutMs = options?.timeout || 30000;
+    setTimeout(() => {
+      if (activeCLIProcesses.has(id)) {
+        console.warn(`[${new Date().toISOString()}] Killing CLI process ${id} due to timeout`);
+        cliProcess.kill('SIGTERM');
+        activeCLIProcesses.delete(id);
+        
+        if (!res.headersSent) {
+          res.status(408).json({
+            id,
+            success: false,
+            error: `Command timed out after ${timeoutMs}ms`,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    }, timeoutMs);
+
+  } catch (error) {
+    console.error('Error in Claude CLI execution:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Health check endpoint for Claude Code CLI
+app.get('/api/claude/health', async (req, res) => {
+  try {
+    const healthCheck = spawn('claude-code', ['--version'], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      timeout: 5000,
+    });
+
+    let output = '';
+    healthCheck.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    healthCheck.on('close', (code) => {
+      if (code === 0) {
+        res.json({
+          status: 'healthy',
+          version: output.trim(),
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        res.status(503).json({
+          status: 'unhealthy',
+          error: 'Claude Code CLI not responding',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    });
+
+    healthCheck.on('error', (error) => {
+      res.status(503).json({
+        status: 'unavailable',
+        error: error.code === 'ENOENT' 
+          ? 'Claude Code CLI not installed'
+          : error.message,
+        timestamp: new Date().toISOString(),
+      });
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -240,11 +422,26 @@ io.on('connection', (socket) => {
   });
 });
 
-// File watching
-const watcher = chokidar.watch(PROJECT_ROOT, {
-  ignored: /(^|[\/\\])\../, // ignore dotfiles
+// File watching - only watch source files to avoid too many open files
+const watcher = chokidar.watch([
+  path.join(PROJECT_ROOT, 'src'),
+  path.join(PROJECT_ROOT, 'server'),
+  path.join(PROJECT_ROOT, '*.json'),
+  path.join(PROJECT_ROOT, '*.md'),
+  path.join(PROJECT_ROOT, '*.ts'),
+  path.join(PROJECT_ROOT, '*.js')
+], {
+  ignored: [
+    /(^|[\/\\])\../, // ignore dotfiles
+    /node_modules/, // ignore node_modules
+    /dist/, // ignore build output
+    /\.git/, // ignore git
+    /logs/, // ignore logs
+  ],
   persistent: true,
-  ignoreInitial: true
+  ignoreInitial: true,
+  usePolling: false,
+  depth: 5 // limit recursion depth
 });
 
 watcher.on('change', (filePath) => {

@@ -58,26 +58,72 @@ export const AIAssistant: React.FC = () => {
     }
   };
 
+  const handleQuickAction = async (action: string) => {
+    if (!activeFile) return;
+
+    setIsLoading(true);
+    const userMessage = `${action}: ${activeFile.name}`;
+    
+    const newConversation = [
+      ...conversation,
+      { role: 'user' as const, content: userMessage, timestamp: new Date() }
+    ];
+    setConversation(newConversation);
+
+    try {
+      let response: string;
+      
+      switch (action) {
+        case 'Explain Code':
+          response = await claudeCodeCLI.explainCode(activeFile.content || '');
+          break;
+        case 'Debug Code':
+          response = await claudeCodeCLI.debugCode(activeFile.content || '', 'Please analyze for potential issues');
+          break;
+        case 'Optimize':
+          response = await claudeCodeCLI.optimizeCode(activeFile.content || '');
+          break;
+        default:
+          response = await claudeCodeCLI.askAssistant(`Generate a React component for ${action}`, activeFile.content);
+      }
+
+      setConversation([
+        ...newConversation,
+        { role: 'assistant', content: response, timestamp: new Date() }
+      ]);
+    } catch (error) {
+      setConversation([
+        ...newConversation,
+        { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.', timestamp: new Date() }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const quickActions = [
     {
       icon: <Code size={16} />,
       label: 'Generate Code',
-      prompt: 'Generate a React component for...',
+      action: () => setInput('Generate a React component for '),
     },
     {
       icon: <Bug size={16} />,
       label: 'Debug Code',
-      prompt: 'Help me debug this code:',
+      action: () => handleQuickAction('Debug Code'),
+      disabled: !activeFile,
     },
     {
       icon: <FileText size={16} />,
       label: 'Explain Code',
-      prompt: 'Explain how this code works:',
+      action: () => handleQuickAction('Explain Code'),
+      disabled: !activeFile,
     },
     {
       icon: <Lightbulb size={16} />,
       label: 'Optimize',
-      prompt: 'How can I optimize this code?',
+      action: () => handleQuickAction('Optimize'),
+      disabled: !activeFile,
     },
   ];
 
@@ -100,14 +146,28 @@ export const AIAssistant: React.FC = () => {
           {quickActions.map((action, index) => (
             <button
               key={index}
-              onClick={() => setInput(action.prompt)}
-              className="flex items-center space-x-2 p-2 bg-gray-700 rounded-md hover:bg-gray-600 transition-colors text-sm"
+              onClick={action.action}
+              disabled={action.disabled || isLoading}
+              className={`flex items-center space-x-2 p-2 rounded-md transition-colors text-sm ${
+                action.disabled 
+                  ? 'bg-gray-600 text-gray-500 cursor-not-allowed' 
+                  : 'bg-gray-700 hover:bg-gray-600 text-white'
+              }`}
             >
-              <div className="text-purple-400">{action.icon}</div>
+              <div className={`${action.disabled ? 'text-gray-500' : 'text-purple-400'}`}>
+                {action.icon}
+              </div>
               <span className="text-xs">{action.label}</span>
             </button>
           ))}
         </div>
+        
+        {/* Context Indicator */}
+        {activeFile && (
+          <div className="mt-3 text-xs text-gray-400 bg-gray-700 rounded px-2 py-1">
+            <span className="text-green-400">●</span> Context: {activeFile.name}
+          </div>
+        )}
       </div>
 
       {/* Conversation */}

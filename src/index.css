@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom IDE styles */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #1e1e1e;
+    color: #cccccc;
+    overflow: hidden;
+  }
+  
+  /* Custom scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #2d2d30;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 6px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4f4f4f;
+  }
+}
+
+@layer components {
+  .ide-panel {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .ide-button {
+    @apply px-3 py-1.5 rounded text-sm font-medium transition-colors
+           bg-gray-700 hover:bg-gray-600 text-gray-300 hover:text-white;
+  }
+  
+  .ide-input {
+    @apply px-3 py-2 rounded bg-gray-700 border border-gray-600
+           text-gray-300 placeholder-gray-400 focus:outline-none focus:border-blue-500;
+  }
+}
